@@ -1,4 +1,2 @@
-# This file is generated during build from _headers.template.
-# For local fallback only. Replace or regenerate before deploying.
-/*
-  Basic-Auth: admin:local-dev-password
+# No Netlify Basic Auth rules are used in this version.
+# Access control is enforced by the Netlify Edge Function in netlify/edge-functions/auth.js.

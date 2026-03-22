@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Access</title>
+  <meta name="description" content="Private site login.">
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --panel: rgba(255, 255, 255, 0.88);
+      --border: rgba(25, 33, 29, 0.12);
+      --text: #19211d;
+      --muted: #617067;
+      --accent: #1f6b52;
+      --danger: #ad4d38;
+      --shadow: 0 18px 40px rgba(20, 33, 27, 0.08);
+      --font-sans: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(31, 107, 82, 0.08), transparent 30%),
+        linear-gradient(180deg, #f5f2eb 0%, #efe9df 100%);
+    }
+
+    .panel {
+      width: min(100%, 460px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.95);
+      font: inherit;
+    }
+
+    button {
+      margin-top: 16px;
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .error {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(173, 77, 56, 0.12);
+      color: var(--danger);
+      display: none;
+    }
+
+    .error.is-visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <p class="eyebrow">Private Site</p>
+    <h1>Secure Access</h1>
+    <p>Enter your site password to continue to the control panel.</p>
+
+    <form method="post" action="/auth/login">
+      <input type="hidden" name="redirect" id="redirectField" value="/">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Enter Site</button>
+    </form>
+
+    <div class="error" id="errorBox" role="alert">Password was incorrect. Try again.</div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect") || "/";
+    const error = params.get("error");
+
+    document.getElementById("redirectField").value = redirect.startsWith("/") ? redirect : "/";
+
+    if (error === "1") {
+      document.getElementById("errorBox").classList.add("is-visible");
+    }
+  </script>
+</body>
+</html>
