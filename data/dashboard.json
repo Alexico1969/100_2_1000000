@@ -1,64 +1,17 @@
 {
   "overview": {
-    "title": "Weekly operating snapshot",
-    "description": "This dashboard is a simple front-end shell for tracking progress across internal priorities. Swap the JSON source later if you want to connect live systems.",
-    "focusStatus": "In Progress",
-    "reviewWindow": "Weekly review cadence",
-    "owner": "Alex"
+    "title": "",
+    "description": "",
+    "focusStatus": "",
+    "reviewWindow": "",
+    "owner": ""
   },
   "lastUpdated": {
-    "timestamp": "2026-03-22 09:15 ET",
-    "by": "Alex",
-    "note": "Rolled project updates into one consolidated view.",
-    "nextReview": "2026-03-25 08:30 ET"
+    "timestamp": "",
+    "by": "",
+    "note": "",
+    "nextReview": ""
   },
-  "metrics": [
-    {
-      "label": "Active initiatives",
-      "value": "6",
-      "delta": "+2 since last month",
-      "note": "Includes operations, product cleanup, and knowledge capture."
-    },
-    {
-      "label": "Items at risk",
-      "value": "2",
-      "delta": "Stable week over week",
-      "note": "Both risks are tied to external dependencies."
-    },
-    {
-      "label": "Completion pace",
-      "value": "78%",
-      "delta": "+6% this week",
-      "note": "Measured against the current quarter plan."
-    }
-  ],
-  "projects": [
-    {
-      "name": "Operations refresh",
-      "summary": "Standardize recurring checklists and reduce manual follow-up.",
-      "status": "In Progress",
-      "owner": "Alex",
-      "progress": 72,
-      "targetDate": "2026-04-05",
-      "nextMilestone": "Finalize the weekly operations template"
-    },
-    {
-      "name": "Knowledge base cleanup",
-      "summary": "Consolidate duplicate documents and archive stale references.",
-      "status": "Todo",
-      "owner": "Alex",
-      "progress": 38,
-      "targetDate": "2026-04-12",
-      "nextMilestone": "Tag high-value documents for migration"
-    },
-    {
-      "name": "Personal analytics view",
-      "summary": "Create a lighter reporting flow for the metrics worth checking daily.",
-      "status": "Blocked",
-      "owner": "Alex",
-      "progress": 55,
-      "targetDate": "2026-04-18",
-      "nextMilestone": "Resolve data export formatting issue"
-    }
-  ]
+  "metrics": [],
+  "projects": []
 }

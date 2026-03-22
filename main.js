@@ -128,42 +128,63 @@ function renderView(view) {
 
 function renderDashboard() {
   const { dashboard } = state.data;
+  const hasOverview = [
+    dashboard.overview.title,
+    dashboard.overview.description,
+    dashboard.overview.focusStatus,
+    dashboard.overview.reviewWindow,
+    dashboard.overview.owner,
+    dashboard.lastUpdated.timestamp,
+    dashboard.lastUpdated.by,
+    dashboard.lastUpdated.note,
+    dashboard.lastUpdated.nextReview
+  ].some(Boolean);
+
+  const hasMetrics = dashboard.metrics.length > 0;
+  const hasProjects = dashboard.projects.length > 0;
 
   content.innerHTML = `
-    <section class="hero-panel">
-      <div>
-        <p class="eyebrow">Program Health</p>
-        <h3>${dashboard.overview.title}</h3>
-        <p class="muted">${dashboard.overview.description}</p>
-        <div class="badge-row">
-          <span class="badge status ${normalizeClass(dashboard.overview.focusStatus)}">${dashboard.overview.focusStatus}</span>
-          <span class="pill">${dashboard.overview.reviewWindow}</span>
-          <span class="pill">Owner: ${dashboard.overview.owner}</span>
-        </div>
-      </div>
-      <div class="summary-card">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Last Updated</p>
-            <h3>${dashboard.lastUpdated.timestamp}</h3>
+    ${hasOverview ? `
+      <section class="hero-panel">
+        <div>
+          <p class="eyebrow">Program Health</p>
+          <h3>${dashboard.overview.title}</h3>
+          <p class="muted">${dashboard.overview.description}</p>
+          <div class="badge-row">
+            ${dashboard.overview.focusStatus ? `<span class="badge status ${normalizeClass(dashboard.overview.focusStatus)}">${dashboard.overview.focusStatus}</span>` : ""}
+            ${dashboard.overview.reviewWindow ? `<span class="pill">${dashboard.overview.reviewWindow}</span>` : ""}
+            ${dashboard.overview.owner ? `<span class="pill">Owner: ${dashboard.overview.owner}</span>` : ""}
           </div>
         </div>
-        <div class="summary-list">
-          <div class="summary-item">
-            <span class="field-label">Updated by</span>
-            <strong>${dashboard.lastUpdated.by}</strong>
+        <div class="summary-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Last Updated</p>
+              <h3>${dashboard.lastUpdated.timestamp || "No updates yet"}</h3>
+            </div>
           </div>
-          <div class="summary-item">
-            <span class="field-label">Notes</span>
-            <strong>${dashboard.lastUpdated.note}</strong>
-          </div>
-          <div class="summary-item">
-            <span class="field-label">Next review</span>
-            <strong>${dashboard.lastUpdated.nextReview}</strong>
+          <div class="summary-list">
+            <div class="summary-item">
+              <span class="field-label">Updated by</span>
+              <strong>${dashboard.lastUpdated.by || "Add a name"}</strong>
+            </div>
+            <div class="summary-item">
+              <span class="field-label">Notes</span>
+              <strong>${dashboard.lastUpdated.note || "Add a short update summary"}</strong>
+            </div>
+            <div class="summary-item">
+              <span class="field-label">Next review</span>
+              <strong>${dashboard.lastUpdated.nextReview || "Set a review date"}</strong>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    ` : `
+      <section class="empty-state">
+        <h3>Dashboard overview is empty</h3>
+        <p>Add the top-level summary fields in <code>data/dashboard.json</code> to populate the main control-center snapshot.</p>
+      </section>
+    `}
 
     <section class="panel">
       <div class="section-heading">
@@ -172,16 +193,22 @@ function renderDashboard() {
           <h3>Where things stand right now</h3>
         </div>
       </div>
-      <div class="metrics-grid">
-        ${dashboard.metrics.map((metric) => `
-          <article class="metric-card">
-            <p class="field-label">${metric.label}</p>
-            <p class="metric-value">${metric.value}</p>
-            <p class="metric-delta">${metric.delta}</p>
-            <p class="muted">${metric.note}</p>
-          </article>
-        `).join("")}
-      </div>
+      ${hasMetrics ? `
+        <div class="metrics-grid">
+          ${dashboard.metrics.map((metric) => `
+            <article class="metric-card">
+              <p class="field-label">${metric.label}</p>
+              <p class="metric-value">${metric.value}</p>
+              <p class="metric-delta">${metric.delta}</p>
+              <p class="muted">${metric.note}</p>
+            </article>
+          `).join("")}
+        </div>
+      ` : `
+        <div class="empty-state">
+          <p>No metrics yet. Add items to <code>dashboard.metrics</code> in <code>data/dashboard.json</code>.</p>
+        </div>
+      `}
     </section>
 
     <section class="panel">
@@ -191,41 +218,47 @@ function renderDashboard() {
           <h3>Ongoing initiatives</h3>
         </div>
       </div>
-      <div class="progress-list">
-        ${dashboard.projects.map((project) => `
-          <article class="status-card">
-            <div class="progress-meta">
-              <div>
-                <h4>${project.name}</h4>
-                <p class="muted">${project.summary}</p>
-              </div>
-              <div class="badge-row">
-                <span class="status ${normalizeClass(project.status)}">${project.status}</span>
-                <span class="pill">${project.owner}</span>
-              </div>
-            </div>
-            <div class="progress-row">
+      ${hasProjects ? `
+        <div class="progress-list">
+          ${dashboard.projects.map((project) => `
+            <article class="status-card">
               <div class="progress-meta">
-                <span class="field-label">Completion</span>
-                <strong>${project.progress}%</strong>
+                <div>
+                  <h4>${project.name}</h4>
+                  <p class="muted">${project.summary}</p>
+                </div>
+                <div class="badge-row">
+                  <span class="status ${normalizeClass(project.status)}">${project.status}</span>
+                  <span class="pill">${project.owner}</span>
+                </div>
               </div>
-              <div class="progress-track" aria-label="${project.name} progress">
-                <div class="progress-fill" style="width: ${project.progress}%"></div>
+              <div class="progress-row">
+                <div class="progress-meta">
+                  <span class="field-label">Completion</span>
+                  <strong>${project.progress}%</strong>
+                </div>
+                <div class="progress-track" aria-label="${project.name} progress">
+                  <div class="progress-fill" style="width: ${project.progress}%"></div>
+                </div>
               </div>
-            </div>
-            <div class="detail-list">
-              <div class="detail-item">
-                <span class="field-label">Target</span>
-                <strong>${project.targetDate}</strong>
+              <div class="detail-list">
+                <div class="detail-item">
+                  <span class="field-label">Target</span>
+                  <strong>${project.targetDate}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="field-label">Next milestone</span>
+                  <strong>${project.nextMilestone}</strong>
+                </div>
               </div>
-              <div class="detail-item">
-                <span class="field-label">Next milestone</span>
-                <strong>${project.nextMilestone}</strong>
-              </div>
-            </div>
-          </article>
-        `).join("")}
-      </div>
+            </article>
+          `).join("")}
+        </div>
+      ` : `
+        <div class="empty-state">
+          <p>No projects yet. Add items to <code>dashboard.projects</code> in <code>data/dashboard.json</code>.</p>
+        </div>
+      `}
     </section>
   `;
 }
@@ -251,7 +284,7 @@ function renderActions() {
         </div>
         <span class="muted">${actions.items.length} tracked actions</span>
       </div>
-      ${Object.entries(groupedActions).map(([group, items]) => `
+      ${actions.items.length ? Object.entries(groupedActions).map(([group, items]) => `
         <section class="panel">
           <div class="section-heading">
             <div>
@@ -297,7 +330,11 @@ function renderActions() {
             `).join("")}
           </div>
         </section>
-      `).join("")}
+      `).join("") : `
+        <div class="empty-state">
+          <p>No actions yet. Add items to <code>data/actions.json</code> and they will appear here automatically.</p>
+        </div>
+      `}
     </section>
   `;
 }
@@ -404,28 +441,34 @@ function renderDocuments() {
         </div>
         <span class="muted">${filteredDocuments.length} of ${documents.items.length} documents shown</span>
       </div>
-      <section class="documents-grid">
-        ${filteredDocuments.map((item) => `
-          <article class="document-card">
-            <header>
-              <div>
-                <h4>${item.title}</h4>
-                <p class="muted">${item.description}</p>
+      ${filteredDocuments.length ? `
+        <section class="documents-grid">
+          ${filteredDocuments.map((item) => `
+            <article class="document-card">
+              <header>
+                <div>
+                  <h4>${item.title}</h4>
+                  <p class="muted">${item.description}</p>
+                </div>
+              </header>
+              <div class="document-meta">
+                <span class="pill">${item.category}</span>
+                <span class="pill">${item.source}</span>
               </div>
-            </header>
-            <div class="document-meta">
-              <span class="pill">${item.category}</span>
-              <span class="pill">${item.source}</span>
-            </div>
-            <div class="detail-list">
-              <div class="detail-item">
-                <span class="field-label">Link</span>
-                <a class="button-link secondary" href="${item.url}" target="_blank" rel="noopener noreferrer">Open document</a>
+              <div class="detail-list">
+                <div class="detail-item">
+                  <span class="field-label">Link</span>
+                  <a class="button-link secondary" href="${item.url}" target="_blank" rel="noopener noreferrer">Open document</a>
+                </div>
               </div>
-            </div>
-          </article>
-        `).join("")}
-      </section>
+            </article>
+          `).join("")}
+        </section>
+      ` : `
+        <div class="empty-state">
+          <p>${documents.items.length ? "No documents match the current filters." : "No documents yet. Add items to `data/documents.json` to build your reference library."}</p>
+        </div>
+      `}
     </section>
   `;
 }
