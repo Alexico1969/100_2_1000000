@@ -4,7 +4,13 @@ const state = {
   logSearch: "",
   actionGroupBy: "priority",
   documentCategory: "all",
-  documentSource: "all"
+  documentSource: "all",
+  newsItems: [],
+  newsLoading: false,
+  newsError: "",
+  newsLastUpdated: "",
+  newsMinPrice: 5,
+  newsMinVolume: 1000000
 };
 
 const content = document.getElementById("content");
@@ -74,6 +80,23 @@ function bindShellEvents() {
       state.documentSource = event.target.value;
       renderDocuments();
     }
+
+    if (event.target.matches("#newsMinPrice")) {
+      state.newsMinPrice = Number(event.target.value) || 5;
+    }
+
+    if (event.target.matches("#newsMinVolume")) {
+      state.newsMinVolume = Number(event.target.value) || 1000000;
+    }
+  });
+
+  content.addEventListener("submit", (event) => {
+    if (!event.target.matches("#newsFilterForm")) {
+      return;
+    }
+
+    event.preventDefault();
+    fetchNews();
   });
 }
 
@@ -102,6 +125,7 @@ function setView(view) {
 function renderView(view) {
   const labelMap = {
     dashboard: "Dashboard",
+    news: "News",
     actions: "Action Board",
     logs: "Logs",
     documents: "Documents"
@@ -115,6 +139,11 @@ function renderView(view) {
 
   if (view === "dashboard") {
     renderDashboard();
+  } else if (view === "news") {
+    renderNews();
+    if (!state.newsItems.length && !state.newsLoading && !state.newsError) {
+      fetchNews();
+    }
   } else if (view === "actions") {
     renderActions();
   } else if (view === "logs") {
@@ -339,6 +368,103 @@ function renderActions() {
   `;
 }
 
+function renderNews() {
+  const lastUpdated = state.newsLastUpdated
+    ? new Date(state.newsLastUpdated).toLocaleString()
+    : "Not fetched yet";
+
+  content.innerHTML = `
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Candidate Flow</p>
+          <h3>News</h3>
+          <p class="muted">Pull the latest candidate news from OpenClaw and restrict results to U.S. stocks, liquid names, price above your threshold, and a minimum average daily volume.</p>
+        </div>
+        <span class="pill">${state.newsItems.length} candidates</span>
+      </div>
+
+      <form class="toolbar news-toolbar" id="newsFilterForm">
+        <div class="toolbar-controls news-controls">
+          <label class="news-field">
+            <span class="field-label">Market</span>
+            <input class="input" type="text" value="U.S. stocks only" disabled>
+          </label>
+          <label class="news-field">
+            <span class="field-label">Liquidity</span>
+            <input class="input" type="text" value="Liquid names only" disabled>
+          </label>
+          <label class="news-field">
+            <span class="field-label">Minimum price</span>
+            <input class="input" id="newsMinPrice" type="number" min="0" step="0.01" value="${escapeAttribute(state.newsMinPrice)}">
+          </label>
+          <label class="news-field">
+            <span class="field-label">Minimum average daily volume</span>
+            <input class="input" id="newsMinVolume" type="number" min="0" step="1000" value="${escapeAttribute(state.newsMinVolume)}">
+          </label>
+        </div>
+        <div class="news-actions">
+          <button class="button-link" type="submit">${state.newsLoading ? "Refreshing..." : "Pull latest news"}</button>
+          <span class="muted">Last updated: ${lastUpdated}</span>
+        </div>
+      </form>
+
+      ${state.newsError ? `
+        <div class="empty-state">
+          <h3>News feed unavailable</h3>
+          <p>${escapeHtml(state.newsError)}</p>
+        </div>
+      ` : ""}
+
+      ${state.newsLoading ? `
+        <section class="loading-state">
+          <p>Fetching candidate news from OpenClaw...</p>
+        </section>
+      ` : ""}
+
+      ${!state.newsLoading && !state.newsItems.length && !state.newsError ? `
+        <div class="empty-state">
+          <h3>No candidate news yet</h3>
+          <p>Run the fetch once your OpenClaw Gateway is online and the Netlify environment variables are configured.</p>
+        </div>
+      ` : ""}
+
+      ${state.newsItems.length ? `
+        <section class="news-grid">
+          ${state.newsItems.map((item) => `
+            <article class="news-card">
+              <header>
+                <div>
+                  <div class="badge-row">
+                    <span class="pill">${escapeHtml(item.symbol || "N/A")}</span>
+                    <span class="pill">${escapeHtml(item.market || "US")}</span>
+                    ${item.candidateScore ? `<span class="status todo">Score ${escapeHtml(item.candidateScore)}</span>` : ""}
+                  </div>
+                  <h4>${escapeHtml(item.headline || item.company || "Untitled candidate")}</h4>
+                  <p class="muted">${escapeHtml(item.company || "Company name unavailable")}</p>
+                </div>
+                <div class="news-pricing">
+                  <strong>${formatCurrency(item.price)}</strong>
+                  <span class="timestamp">Avg vol ${formatVolume(item.averageDailyVolume)}</span>
+                </div>
+              </header>
+              <p>${escapeHtml(item.summary || "No summary returned.")}</p>
+              ${item.whyItMatters ? `<p><strong>Why it matters:</strong> ${escapeHtml(item.whyItMatters)}</p>` : ""}
+              <div class="news-meta">
+                <span class="timestamp">${formatDate(item.publishedAt)}</span>
+                ${item.sourceName ? `<span class="pill">${escapeHtml(item.sourceName)}</span>` : ""}
+              </div>
+              <div class="action-links">
+                ${item.sourceUrl ? `<a class="button-link secondary" href="${escapeAttribute(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source</a>` : ""}
+              </div>
+            </article>
+          `).join("")}
+        </section>
+      ` : ""}
+    </section>
+  `;
+}
+
 function renderLogs() {
   const { logs } = state.data;
   const search = state.logSearch;
@@ -509,4 +635,80 @@ function normalizeClass(value) {
 
 function escapeAttribute(value) {
   return String(value).replace(/"/g, "&quot;");
+}
+
+async function fetchNews() {
+  state.newsLoading = true;
+  state.newsError = "";
+  renderNews();
+
+  try {
+    const query = new URLSearchParams({
+      minPrice: String(state.newsMinPrice),
+      minVolume: String(Math.floor(state.newsMinVolume))
+    });
+    const response = await fetch(`/api/news?${query.toString()}`, { cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(payload.error || "The news request failed.");
+    }
+
+    state.newsItems = Array.isArray(payload.items) ? payload.items : [];
+    state.newsLastUpdated = payload.generatedAt || new Date().toISOString();
+  } catch (error) {
+    console.error("Failed to fetch candidate news:", error);
+    state.newsItems = [];
+    state.newsError = error.message || "Unable to load candidate news.";
+  } finally {
+    state.newsLoading = false;
+    renderNews();
+  }
+}
+
+function formatCurrency(value) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return "Price n/a";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+function formatVolume(value) {
+  const volume = Number(value);
+  if (!Number.isFinite(volume) || volume <= 0) {
+    return "n/a";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1
+  }).format(volume);
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "Date unavailable";
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleString();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

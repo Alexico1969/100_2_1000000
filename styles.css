@@ -266,6 +266,7 @@ a {
 .metrics-grid,
 .documents-grid,
 .actions-grid,
+.news-grid,
 .logs-grid {
   display: grid;
   gap: 18px;
@@ -278,13 +279,15 @@ a {
 
 .grid-2,
 .documents-grid,
-.actions-grid {
+.actions-grid,
+.news-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .summary-card,
 .metric-card,
 .status-card,
+.news-card,
 .document-card,
 .action-card,
 .log-entry {
@@ -426,6 +429,25 @@ a {
   gap: 10px;
 }
 
+.news-toolbar {
+  align-items: flex-end;
+}
+
+.news-controls {
+  flex: 1 1 620px;
+}
+
+.news-field {
+  display: grid;
+  gap: 6px;
+}
+
+.news-actions {
+  display: grid;
+  gap: 10px;
+  justify-items: flex-start;
+}
+
 .input,
 .select {
   border: 1px solid var(--border);
@@ -441,6 +463,7 @@ a {
 }
 
 .action-card header,
+.news-card header,
 .document-card header,
 .log-entry summary {
   display: flex;
@@ -450,9 +473,28 @@ a {
 }
 
 .action-card h4,
+.news-card h4,
 .document-card h4,
 .log-entry h4 {
   margin: 0 0 8px;
+}
+
+.news-card {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.news-pricing {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+}
+
+.news-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
 }
 
 .action-links,
@@ -550,7 +592,8 @@ a {
   .grid-2,
   .metrics-grid,
   .documents-grid,
-  .actions-grid {
+  .actions-grid,
+  .news-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -560,6 +603,7 @@ a {
   .section-heading,
   .toolbar,
   .action-card header,
+  .news-card header,
   .document-card header,
   .log-entry summary,
   .progress-meta,
@@ -581,5 +625,9 @@ a {
   .input,
   .select {
     width: 100%;
+  }
+
+  .news-actions {
+    justify-items: stretch;
   }
 }
