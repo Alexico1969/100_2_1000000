@@ -1,0 +1,46 @@
+{
+  "entries": [
+    {
+      "timestamp": "2026-03-22 09:15 ET",
+      "category": "Dashboard",
+      "type": "Update",
+      "title": "Weekly control panel refresh completed",
+      "text": "Refreshed project health metrics, reviewed current blockers, and updated the next milestone dates for all tracked initiatives."
+    },
+    {
+      "timestamp": "2026-03-21 16:40 ET",
+      "category": "Operations",
+      "type": "Note",
+      "title": "Vendor follow-up draft prepared",
+      "text": "Prepared a clean follow-up list for external vendors and grouped missing items by owner so outreach can be done quickly next week."
+    },
+    {
+      "timestamp": "2026-03-21 11:05 ET",
+      "category": "Systems",
+      "type": "Issue",
+      "title": "Timezone mismatch blocked analytics export",
+      "text": "Analytics export mixed UTC timestamps with local time fields, which broke the summary pipeline and blocked the personal analytics view."
+    },
+    {
+      "timestamp": "2026-03-20 14:22 ET",
+      "category": "Documents",
+      "type": "Archive",
+      "title": "Policy draft archive cleanup",
+      "text": "Moved outdated policy drafts into the archive folder, updated naming conventions, and removed old references from the active list."
+    },
+    {
+      "timestamp": "2026-03-19 08:10 ET",
+      "category": "Reporting",
+      "type": "Update",
+      "title": "Monthly scorecard outline started",
+      "text": "Created a working outline for the monthly scorecard with sections for metrics, narrative highlights, risks, and pending decisions."
+    },
+    {
+      "timestamp": "2026-03-18 17:35 ET",
+      "category": "Planning",
+      "type": "Decision",
+      "title": "Kept dashboard data source local for first release",
+      "text": "Chose local JSON files for the first version so the site stays simple, fast to edit, and easy to deploy without backend infrastructure."
+    }
+  ]
+}

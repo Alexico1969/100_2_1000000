@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Control Panel</title>
+  <meta name="description" content="A private personal dashboard for projects, actions, logs, and documents.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CP</div>
+        <div>
+          <p class="eyebrow">Private Workspace</p>
+          <h1>Control Panel</h1>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <button class="nav-link is-active" data-view="dashboard" type="button">
+          <span class="nav-icon" aria-hidden="true">01</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-view="actions" type="button">
+          <span class="nav-icon" aria-hidden="true">02</span>
+          <span>Action Board</span>
+        </button>
+        <button class="nav-link" data-view="logs" type="button">
+          <span class="nav-icon" aria-hidden="true">03</span>
+          <span>Logs</span>
+        </button>
+        <button class="nav-link" data-view="documents" type="button">
+          <span class="nav-icon" aria-hidden="true">04</span>
+          <span>Documents</span>
+        </button>
+      </nav>
+
+      <section class="sidebar-note">
+        <p class="eyebrow">Access</p>
+        <p>This entire site is intended to sit behind Netlify Basic Auth using the browser's native login prompt.</p>
+      </section>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Internal Overview</p>
+          <h2 id="page-title">Dashboard</h2>
+        </div>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="sidebar">
+          Menu
+        </button>
+      </header>
+
+      <main class="content" id="content" tabindex="-1">
+        <section class="loading-state">
+          <p>Loading workspace data...</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "private-control-panel",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/generate-headers.mjs"
+  }
+}

@@ -1,0 +1,4 @@
+# Generated into _headers during the Netlify build.
+# Keep the username here and source the password from the PSSW environment variable.
+/*
+  Basic-Auth: admin:__PSSW__

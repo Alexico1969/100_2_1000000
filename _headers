@@ -1,0 +1,4 @@
+# This file is generated during build from _headers.template.
+# For local fallback only. Replace or regenerate before deploying.
+/*
+  Basic-Auth: admin:local-dev-password
