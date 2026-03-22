@@ -1,4 +1,7 @@
 {
   "name": "private-control-panel",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "node -e \"console.log('No build step required for static site with Edge Function auth.')\""
+  }
 }
